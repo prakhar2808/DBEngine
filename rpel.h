@@ -3,8 +3,6 @@
 
 #include "dbops.h"
 
-using namespace std;
-
 int main();
 void printWelcome();
 void printExit();

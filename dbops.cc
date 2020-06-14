@@ -1,33 +1,37 @@
 #include "dbops.h"
 
-void evalOp(string inBuffer) {
+void evalOp(std::string inBuffer, database* dbObject) {
   // Put op
   if(regex_match(inBuffer, putRegex)) {
-    pair<string, string> keyValuePair = getKeyValuePair(inBuffer);
-    putOp(keyValuePair.first, keyValuePair.second);
+    keyValuePair_t keyValuePair = getKeyValuePair(inBuffer);
+    putOp(keyValuePair, dbObject);
   }
   // Get op
   else if(regex_match(inBuffer, getRegex)) {
-    string key = getKey(inBuffer);
-    getOp(key);
+    std::string key = getKey(inBuffer);
+    getOp(key, dbObject);
   }
   // No op
   else {
-    cout<<"Invalid Op"<<endl;
+    std::cout << "Invalid Op" << std::endl;
   }
 }
 
 //-----------------------------------------------------------------------------
 
-void putOp(string key, string value) {
-  cout<<"KEY = "<<key<<endl;
-  cout<<"VALUE = "<<value<<endl;
+void putOp(keyValuePair_t keyValuePair, database* dbObject) {
+  std::cout << "Putting key = <"
+       << keyValuePair.key << ">, value = <"
+       << keyValuePair.value << "> ..." << std::endl;
+  dbObject->writeKeyValuePair(keyValuePair);
 }
 
 //-----------------------------------------------------------------------------
 
-void getOp(string& key) {
-  cout<<"KEY = "<<key<<endl;
+void getOp(std::string key, database* dbObject) {
+  std::cout << "Getting value from the database for the key <"
+       << key << "> ..." << std::endl;
+  dbObject->readValueFromKey(key);
 }
 
 //-----------------------------------------------------------------------------

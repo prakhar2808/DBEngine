@@ -1,16 +1,16 @@
 #ifndef DB_OPS_H
 #define DB_OPS_H
 
+#include "db.h"
+#include "keyValuePairStruct.h"
 #include "utils.h"
 
-using namespace std;
+#define exitRegex std::regex("[ ]*((EXIT)|(exit))[ ]*")
+#define putRegex std::regex("([ ]*)((PUT)|(put))([ ]*)(<)([ -~]+)(>)([ ]*)(<)([ -~]*)(>)([ ]*)")
+#define getRegex std::regex("([ ]*)((GET)|(get))([ ]*)(<)([ -~]+)(>)([ ]*)")
 
-#define exitRegex regex("[ ]*((EXIT)|(exit))[ ]*")
-#define putRegex regex("([ ]*)((PUT)|(put))([ ]*)(<)([ -~]+)(>)([ ]*)(<)([ -~]*)(>)([ ]*)")
-#define getRegex regex("([ ]*)((GET)|(get))([ ]*)(<)([ -~]+)(>)([ ]*)")
-
-void evalOp(string inBuffer);
-void putOp(string key, string value);
-void getOp(string& key);
+void evalOp(std::string inBuffer, database* dbObject);
+void putOp(keyValuePair_t keyValuePair, database* dbObject);
+void getOp(std::string key, database* dbObject);
 
 #endif

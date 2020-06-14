@@ -1,20 +1,20 @@
 #include "utils.h"
 
-pair<string, string> getKeyValuePair(string& inBuffer) {
+keyValuePair_t getKeyValuePair(std::string inBuffer) {
   int i = 0;
   // Operator
   while(inBuffer[i] != '<') {
     ++i;
   }
   // Key
-  string key = "";
+  std::string key = "";
   ++i;
   while(inBuffer[i] != '>') {
     key += inBuffer[i];
     ++i;
   }
   // Value
-  string value = "";
+  std::string value = "";
   while(inBuffer[i] != '<') {
     ++i;
   }
@@ -23,19 +23,19 @@ pair<string, string> getKeyValuePair(string& inBuffer) {
     value += inBuffer[i];
     ++i;
   }
-  return make_pair(key, value);
+  return keyValuePair_t(key, value);
 }
 
 //-----------------------------------------------------------------------------
 
-string getKey(string& inBuffer) {
+std::string getKey(std::string inBuffer) {
   int i = 0;
   // Operator
   while(inBuffer[i] != '<') {
     ++i;
   }
   // Key
-  string key = "";
+  std::string key = "";
   ++i;
   while(inBuffer[i] != '>') {
     key += inBuffer[i];
@@ -46,7 +46,7 @@ string getKey(string& inBuffer) {
 
 //-----------------------------------------------------------------------------
 
-int getIndex(string str, int start, char ch) {
+int getIndex(std::string str, int start, char ch) {
   int len = str.length();
   if(start >= len) {
     return -1;

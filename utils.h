@@ -7,12 +7,10 @@
 #include <string>
 #include <utility>
 
-#include "dbops.h"
+#include "keyValuePairStruct.h"
 
-using namespace std;
-
-pair<string, string> getKeyValuePair(string& inBuffer);
-string getKey(string& inBuffer);
-int getIndex(string str, int start, char ch);
+keyValuePair_t getKeyValuePair(std::string inBuffer);
+std::string getKey(std::string inBuffer);
+int getIndex(std::string str, int start, char ch);
 
 #endif
