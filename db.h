@@ -2,10 +2,8 @@
 #define DB_H
 
 #include "keyValuePairStruct.h"
-#include "memtable.h"
+#include "memtableWrapper.h"
 #include "utils.h"
-
-#define MAX_MEMTABLE_SIZE 10
 
 class database {
   public:
@@ -18,8 +16,8 @@ class database {
     // Destructor
     ~database();
   private:
-    // Memtable object
-    memtable memtableObj;
+    // MemtableWrapper object
+    memtableWrapper* memtableWrapperObjRef;
 };
 
 #endif
