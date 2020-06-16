@@ -10,9 +10,9 @@ class database {
     // Constructor
     database();
     // Write in DB
-    void writeKeyValuePair(keyValuePair_t keyValuePair);
+    std::string writeKeyValuePair(keyValuePair_t keyValuePair);
     // Read from DB
-    void readValueFromKey(std::string key);
+    std::string readValueFromKey(std::string key);
     // Destructor
     ~database();
   private:

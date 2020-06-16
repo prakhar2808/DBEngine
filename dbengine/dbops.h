@@ -9,8 +9,8 @@
 #define putRegex std::regex("([ ]*)((PUT)|(put))([ ]*)(<)([ -~]+)(>)([ ]*)(<)([ -~]*)(>)([ ]*)")
 #define getRegex std::regex("([ ]*)((GET)|(get))([ ]*)(<)([ -~]+)(>)([ ]*)")
 
-void evalOp(std::string inBuffer, database* dbObject);
-void putOp(keyValuePair_t keyValuePair, database* dbObject);
-void getOp(std::string key, database* dbObject);
+std::string evalOp(std::string inBuffer, database* dbObject);
+std::string putOp(keyValuePair_t keyValuePair, database* dbObject);
+std::string getOp(std::string key, database* dbObject);
 
 #endif

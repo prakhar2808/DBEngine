@@ -1,15 +1,33 @@
-DEPS = rpel.h db.h dbops.h utils.h memtable.h memtableWrapper.h 
-OBJ = rpel.o db.o dbops.o utils.o memtable.o memtableWrapper.cc
-CC = g++
+DB_CC_SOURCES = $(wildcard dbengine/*.cc serverCode/*.cc)
+DB_HEADERS = $(wildcard dbengine/*.h serverCode/*.h)
 
-%.o: %.cc $(DEPS)
+CLIENT_CC_SOURCES = $(wildcard clientCode/*.cc)
+CLIENT_HEADERS = $(wildcard clientCode/*.h)
+
+DB_OBJS = ${DB_CC_SOURCES:.cc=.o}
+
+CLIENT_OBJS = ${CLIENT_CC_SOURCES:.cc=.o}
+
+CC = g++
+CFLAGS = -g -pthread
+
+all: dbServer.out dbClient.out
+
+%.o: %.cc ${DB_HEADERS} ${CLIENT_HEADERS}
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-main.out: $(OBJ)
+dbServer.out: ${DB_OBJS}
 	$(CC) -o $@ $^ $(CFLAGS)
 
-run: main.out
-	./main.out
+dbClient.out: ${CLIENT_OBJS}
+	$(CC) -o $@ $^ $(CFLAGS)
+
+run: dbServer.out dbClient.out
+	./dbServer.out
+
+clientrun: dbClient.out
+	./dbClient.out
 
 clean:
 	rm -rf *.o *.out
+	rm -rf dbengine/*.o serverCode/*.o clientCode/*.o

@@ -7,15 +7,14 @@ database::database()
 
 //-----------------------------------------------------------------------------
 
-void database::writeKeyValuePair(keyValuePair_t keyValuePair) {
-  memtableWrapperObjRef->putKeyValuePair(keyValuePair);
+std::string database::writeKeyValuePair(keyValuePair_t keyValuePair) {
+  return memtableWrapperObjRef->putKeyValuePair(keyValuePair);
 }
 
 //-----------------------------------------------------------------------------
 
-void database::readValueFromKey(std::string key) {
-  std::cout << memtableWrapperObjRef->getValueFromKey(key)
-            << std::endl;
+std::string database::readValueFromKey(std::string key) {
+  return memtableWrapperObjRef->getValueFromKey(key);
 }
 
 //-----------------------------------------------------------------------------

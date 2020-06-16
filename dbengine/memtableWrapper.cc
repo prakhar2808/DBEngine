@@ -9,8 +9,8 @@ memtableWrapper::memtableWrapper() {
 
 //-----------------------------------------------------------------------------
 
-void memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair) {
-  (*index)->putKeyValuePair(keyValuePair);
+std::string memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair) {
+  return (*index)->putKeyValuePair(keyValuePair);
 }
 
 //-----------------------------------------------------------------------------

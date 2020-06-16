@@ -13,7 +13,7 @@ class memtableWrapper {
     // Constructor
     memtableWrapper();
     // Put a key-value pair in memtable
-    void putKeyValuePair(keyValuePair_t keyValuePair);
+    std::string putKeyValuePair(keyValuePair_t keyValuePair);
     // Get a value for a key from the memtable
     std::string getValueFromKey(std::string key);
     // Destructor

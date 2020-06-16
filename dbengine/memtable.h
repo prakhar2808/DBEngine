@@ -14,7 +14,7 @@ class memtable {
     // Constructor
     memtable(int size, int capacity);
     // Put a key, value pair in the memtable
-    void putKeyValuePair(keyValuePair_t keyValuePair);
+    std::string putKeyValuePair(keyValuePair_t keyValuePair);
     // Check if a key is present in the memtable
     bool isKeyPresent(std::string key);
     // Retrieve a value from the memtable for a given key
