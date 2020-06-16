@@ -1,6 +1,8 @@
 #ifndef DB_H
 #define DB_H
 
+#include <pthread.h>
+
 #include "keyValuePairStruct.h"
 #include "memtableWrapper.h"
 #include "utils.h"

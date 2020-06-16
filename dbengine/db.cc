@@ -8,7 +8,8 @@ database::database()
 //-----------------------------------------------------------------------------
 
 std::string database::writeKeyValuePair(keyValuePair_t keyValuePair) {
-  return memtableWrapperObjRef->putKeyValuePair(keyValuePair);
+  std::string ret = memtableWrapperObjRef->putKeyValuePair(keyValuePair);
+  return ret;
 }
 
 //-----------------------------------------------------------------------------

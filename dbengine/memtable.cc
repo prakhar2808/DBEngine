@@ -9,6 +9,7 @@ memtable::memtable(int size, int capacity) {
 
 std::string memtable::putKeyValuePair(keyValuePair_t keyValuePair) {
   table[keyValuePair.key] = keyValuePair.value;
+  ++size;
   return "Inserted successfully!";
 }
 

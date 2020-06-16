@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
     pthread_cond_signal(&condition_var);
     pthread_mutex_unlock(&mutex);
   }
-
+  delete dbObjectRef;
   return 0;
 }
 
@@ -150,6 +150,7 @@ void* handle_connection(void* pclient_socket) {
 
   sendGoodByeMessage(client_socket);
   close(client_socket);
+  delete rpelObjRef;
   printf("Closing connection\n");
   return NULL;
 }

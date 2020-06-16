@@ -4,9 +4,11 @@
 #include "keyValuePairStruct.h"
 #include "memtable.h"
 
+#include <future>
 #include <list>
+#include <pthread.h>
 
-#define MAX_MEMTABLE_SIZE 10
+#define MAX_MEMTABLE_SIZE 2
 
 class memtableWrapper {
   public:
@@ -16,6 +18,8 @@ class memtableWrapper {
     std::string putKeyValuePair(keyValuePair_t keyValuePair);
     // Get a value for a key from the memtable
     std::string getValueFromKey(std::string key);
+    // Write memtable to disk
+    static void writeMemtableToDisk(std::list<memtable*>::iterator iter);
     // Destructor
     ~memtableWrapper();
   private:
@@ -26,6 +30,8 @@ class memtableWrapper {
     std::list<memtable*> memtableObjPointersList;
     // Iterator to the memtableObjPointer which handles incoming write request.
     std::list<memtable*>::iterator index;
+    // Write lock to the memtables.
+    pthread_mutex_t writeMutex;
 };
 
 #endif
