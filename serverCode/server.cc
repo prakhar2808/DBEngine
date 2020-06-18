@@ -138,13 +138,13 @@ void* handle_connection(void* pclient_socket) {
 
       std::string req(buffer);
 
-      std::string response = rpelObjRef->execute(dbObjectRef, req);
+      bool response = rpelObjRef->execute(dbObjectRef, req, client_socket);
 
-      if(response == "exit") {
+      if(response == 0) {
         break;
       }
 
-      write(client_socket, &response[0], strlen(response.c_str()));
+      // write(client_socket, &response[0], strlen(response.c_str()));
     }
   }
 
@@ -153,6 +153,17 @@ void* handle_connection(void* pclient_socket) {
   delete rpelObjRef;
   printf("Closing connection\n");
   return NULL;
+}
+
+void sendToClient(int client_socket, std::string response)
+{
+  write(client_socket, &response[0], strlen(response.c_str()));
+}
+
+
+void sendToClient(int client_socket, unsigned char response)
+{
+  write(client_socket, &response, 1);
 }
 
 void sendWelcomeMessage(int client_socket) {

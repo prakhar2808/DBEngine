@@ -9,7 +9,7 @@ class rpel {
     // Constructor
     rpel();
     // Start program
-    std::string execute(database* dbObjRef, std::string inBuffer);
+    bool execute(database* dbObjRef, std::string inBuffer, int clientSocket);
     // Destructor
     ~rpel();
 };

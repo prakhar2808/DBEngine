@@ -1,40 +1,51 @@
 #include "dbops.h"
 
-std::string evalOp(std::string inBuffer, database* dbObject) {
+bool evalOp(std::string inBuffer, database* dbObject, int clientSocket) {
   // Return value
-  std::string ret;
+  bool ret=1;
   // Put op
   if(regex_match(inBuffer, putRegex)) {
     keyValuePair_t keyValuePair = getKeyValuePair(inBuffer);
-    ret = putOp(keyValuePair, dbObject);
+    putOp(keyValuePair, clientSocket, dbObject);
   }
   // Get op
   else if(regex_match(inBuffer, getRegex)) {
     std::string key = getKey(inBuffer);
-    ret = getOp(key, dbObject);
+    getOp(key, clientSocket, dbObject);
+  }
+  //List all
+  else if(regex_match(inBuffer, listAllRegex)) {
+    listAllOp(clientSocket, dbObject);
   }
   // No op
   else {
-    ret = "ERROR: Invalid Operation!";
+    ret = 0;
   }
   return ret;
 }
 
 //-----------------------------------------------------------------------------
 
-std::string putOp(keyValuePair_t keyValuePair, database* dbObject) {
+void putOp(keyValuePair_t keyValuePair, int clientSocket, database* dbObject) {
   std::cout << "Putting key = <"
        << keyValuePair.key << ">, value = <"
        << keyValuePair.value << "> ..." << std::endl;
-  return dbObject->writeKeyValuePair(keyValuePair);
+  dbObject->writeKeyValuePair(keyValuePair, clientSocket);
 }
 
 //-----------------------------------------------------------------------------
 
-std::string getOp(std::string key, database* dbObject) {
+void getOp(std::string key, int clientSocket, database* dbObject) {
   std::cout << "Getting value from the database for the key <"
        << key << "> ..." << std::endl;
-  return dbObject->readValueFromKey(key);
+  dbObject->readValueFromKey(key, clientSocket);
 }
 
 //-----------------------------------------------------------------------------
+
+void listAllOp(int clientSocket, database* dbObject) {
+  std::cout << "Getting all data from the database"<<std::endl;
+  dbObject->readAllValues(clientSocket);
+}
+
+//------------------------------------------------------------------------------

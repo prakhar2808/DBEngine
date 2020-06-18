@@ -13,9 +13,11 @@ class database {
     // Constructor
     database();
     // Write in DB
-    std::string writeKeyValuePair(keyValuePair_t keyValuePair);
+    void writeKeyValuePair(keyValuePair_t keyValuePair, int clientSocket);
     // Read from DB
-    std::string readValueFromKey(std::string key);
+    void readValueFromKey(std::string key, int clientSocket);
+    // Read all from DB
+    void readAllValues(int clientSocket);
     // Destructor
     ~database();
   private:

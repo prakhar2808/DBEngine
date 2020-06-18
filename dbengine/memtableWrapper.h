@@ -16,10 +16,14 @@ class memtableWrapper {
     // Constructor
     memtableWrapper(int lastMemtableID);
     // Put a key-value pair in memtable
-    std::string putKeyValuePair(keyValuePair_t keyValuePair,
-                                sstableWrapper* sstableWrapperObjRef);
+
+    void putKeyValuePair(keyValuePair_t keyValuePair,
+                         sstableWrapper* sstableWrapperObjRef,
+                         int clientSocket);
     // Get a value for a key from the memtable
-    std::string getValueFromKey(std::string key);
+    void getValueFromKey(std::string key, int clientSocket);
+    // Get all key-value pairs from db
+    void getAllValues(int clientSocket);
     // Write memtable to disk
     static void writeMemtableToDisk(std::list<memtable*>::iterator iter,
                                     sstableWrapper* sstableWrapperObjRef);
