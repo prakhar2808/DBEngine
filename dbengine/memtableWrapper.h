@@ -1,6 +1,7 @@
 #ifndef MEMTABLE_WRAPPER_H
 #define MEMTABLE_WRAPPER_H
 
+#include "operation.h"
 #include "keyValuePairStruct.h"
 #include "memtable.h"
 #include "sstableWrapper.h"
@@ -17,13 +18,13 @@ class memtableWrapper {
     memtableWrapper(int lastMemtableID);
     // Put a key-value pair in memtable
 
-    void putKeyValuePair(keyValuePair_t keyValuePair,
+    opStatus putKeyValuePair(keyValuePair_t keyValuePair,
                          sstableWrapper* sstableWrapperObjRef,
                          int clientSocket);
     // Get a value for a key from the memtable
-    void getValueFromKey(std::string key, int clientSocket);
+    opStatus getValueFromKey(std::string key, int clientSocket);
     // Get all key-value pairs from db
-    void getAllValues(int clientSocket);
+    opStatus getAllValues(int clientSocket);
     // Write memtable to disk
     static void writeMemtableToDisk(std::list<memtable*>::iterator iter,
                                     sstableWrapper* sstableWrapperObjRef);

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 
+#include "operation.h"
 #include "memtable.h"
 
 class sstable {
@@ -19,7 +20,7 @@ class sstable {
     // To check if a key is present in SSTable
     bool isKeyPresent(std::string key);
     // To get the key's value
-    std::string getValueFromKey(std::string key);
+    opStatus getValueFromKey(std::string key, int clientSocket);
     // Destructor
     ~sstable();
   

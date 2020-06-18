@@ -1,6 +1,7 @@
 #ifndef SSTABLE_WRAPPER_H
 #define SSTABLE_WRAPPER_H
 
+#include "operation.h"
 #include "memtable.h"
 #include "pthread.h"
 #include "sstable.h"
@@ -17,7 +18,7 @@ class sstableWrapper {
     // To dump a memtable in a SSTable
     void dumpMemtableToSSTable(memtable* memtableObjRef);
     // Get key's value from SSTables
-    std::string getValueFromKey(std::string key);
+    opStatus getValueFromKey(std::string key, int clientSocket);
     // Destructor
     ~sstableWrapper();
 

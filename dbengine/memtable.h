@@ -4,6 +4,7 @@
 
 #include <map>
 
+#include "operation.h"
 #include "keyValuePairStruct.h"
 #include "utils.h"
 
@@ -15,11 +16,11 @@ class memtable {
     // Constructor
     memtable(int size, int capacity, int memtableID);
     // Put a key, value pair in the memtable
-    std::string putKeyValuePair(keyValuePair_t keyValuePair);
+    void putKeyValuePair(keyValuePair_t keyValuePair);
     // Check if a key is present in the memtable
     bool isKeyPresent(std::string key);
     // Retrieve a value from the memtable for a given key
-    void getValueFromKey(std::string key, int clientSocket);
+    std::string getValueFromKey(std::string key);
     // Get all values from memtable
     void getAllValues(int clientSocket);
     // Destructor

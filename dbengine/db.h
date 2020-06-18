@@ -3,6 +3,7 @@
 
 #include <pthread.h>
 
+#include "operation.h"
 #include "keyValuePairStruct.h"
 #include "memtableWrapper.h"
 #include "sstableWrapper.h"
@@ -13,11 +14,11 @@ class database {
     // Constructor
     database();
     // Write in DB
-    void writeKeyValuePair(keyValuePair_t keyValuePair, int clientSocket);
+    opStatus writeKeyValuePair(keyValuePair_t keyValuePair, int clientSocket);
     // Read from DB
-    void readValueFromKey(std::string key, int clientSocket);
+    opStatus readValueFromKey(std::string key, int clientSocket);
     // Read all from DB
-    void readAllValues(int clientSocket);
+    opStatus readAllValues(int clientSocket);
     // Destructor
     ~database();
   private:
