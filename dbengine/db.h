@@ -5,6 +5,7 @@
 
 #include "keyValuePairStruct.h"
 #include "memtableWrapper.h"
+#include "sstableWrapper.h"
 #include "utils.h"
 
 class database {
@@ -22,6 +23,8 @@ class database {
   private:
     // MemtableWrapper object
     memtableWrapper* memtableWrapperObjRef;
+    // SSTable object
+    sstableWrapper* sstableWrapperObjRef;
 };
 
 #endif

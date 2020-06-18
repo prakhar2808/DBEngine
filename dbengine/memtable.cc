@@ -1,9 +1,11 @@
 #include "memtable.h"
 #include "../serverCode/server.h"
 
-memtable::memtable(int size, int capacity) {
-  this->size = size;
-  this->capacity = capacity;
+memtable::memtable(int size, int capacity, int memtableID)
+  :size(size),
+  capacity(capacity),
+  memtableID(memtableID) {
+
 }
 
 //-----------------------------------------------------------------------------

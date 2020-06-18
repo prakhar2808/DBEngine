@@ -1,17 +1,22 @@
 #include "memtableWrapper.h"
 #include "../serverCode/server.h"
 
-memtableWrapper::memtableWrapper()
+memtableWrapper::memtableWrapper(int lastMemtableID)
   : writeMutex(PTHREAD_MUTEX_INITIALIZER) {
   // Inserting atleast one memtableObject
-  memtable* memtableObjPointer = new memtable(0, MAX_MEMTABLE_SIZE);
+  memtable* memtableObjPointer = new memtable(0, 
+                                              MAX_MEMTABLE_SIZE, 
+                                              lastMemtableID);
   memtableObjPointersList.push_back(memtableObjPointer);
+  this->lastMemtableID = lastMemtableID;
   index = memtableObjPointersList.begin();
 }
 
 //-----------------------------------------------------------------------------
 
-void memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair, int clientSocket) {
+void memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair, 
+                                      sstableWrapper* sstableWrapperObjRef,
+                                      int clientSocket) {
   // Locking to write
   pthread_mutex_lock(&writeMutex);
   // Put into the memtable
@@ -19,16 +24,17 @@ void memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair, int clientSoc
   // Check if currect memtable is full
   if((*index)->size == (*index)->capacity) {
     // New memtable
-    memtable* nextMemtableObjPointer = new memtable(0, MAX_MEMTABLE_SIZE);
+    memtable* nextMemtableObjPointer = new memtable(0, 
+                                                    MAX_MEMTABLE_SIZE,
+                                                    lastMemtableID + 1);
     memtableObjPointersList.push_back(nextMemtableObjPointer);
+    ++lastMemtableID;
     
     // An async task to put memtable at index to disk and delete entry
     // from list.
-    std::list<memtable*>::iterator index_copy = index;
-    //std::future<bool> futRet = 
-      //std::async(std::launch::async, writeMemtableToDisk, index_copy);
-    std::thread(writeMemtableToDisk, index_copy).detach();
-    // Make index point to the newly created memtable.
+    std::thread(writeMemtableToDisk, index, sstableWrapperObjRef).detach();
+    
+    // Make index point to the next memtable.
     ++index;
     std::cout << "Memtable full, switching to next!" << std::endl;
   }
@@ -85,11 +91,15 @@ void memtableWrapper::getAllValues(int clientSocket) {
 
 //-----------------------------------------------------------------------------
 
-void memtableWrapper::writeMemtableToDisk
-  (std::list<memtable*>::iterator iter) {
-  std::cout << "In here to sleep" << std::endl;
-  std::this_thread::sleep_for(std::chrono::seconds(20));
-  std::cout << "Out of here" << std::endl;
+void memtableWrapper::writeMemtableToDisk(std::list<memtable*>::iterator iter,
+    sstableWrapper* sstableWrapperObjRef) {
+  std::cout << "Dumping memtable "
+            << "ID: " << (*iter)->memtableID
+            << " to disk..." << std::endl;
+  sstableWrapperObjRef->dumpMemtableToSSTable(*iter);
+  //std::this_thread::sleep_for(std::chrono::seconds(20));
+  //TODO: Delete index from list.
+  std::cout << "Dumped memtable." << std::endl;
 }
 
 //-----------------------------------------------------------------------------

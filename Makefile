@@ -28,6 +28,8 @@ run: dbServer.out dbClient.out
 clientrun: dbClient.out
 	./dbClient.out
 
+cleanSSTables:
+	rm -rf SSTablesDir/*
 clean:
 	rm -rf *.o *.out
 	rm -rf dbengine/*.o serverCode/*.o clientCode/*.o
