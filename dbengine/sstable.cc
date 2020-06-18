@@ -1,4 +1,5 @@
 #include "sstable.h"
+#include "../serverCode/server.h"
 
 sstable::sstable(std::string filePath)
   : filePath(filePath),
@@ -53,7 +54,7 @@ bool sstable::isKeyPresent(std::string key) {
 
 //-----------------------------------------------------------------------------
 
-std::string sstable::getValueFromKey(std::string key) {
+opStatus sstable::getValueFromKey(std::string key, int clientSocket) {
   //TODO: Check if present. Then use in-memory index for offset.
   std::ifstream readfd;
   openFileToRead(readfd);
@@ -67,12 +68,14 @@ std::string sstable::getValueFromKey(std::string key) {
     if(data == key) {
       std::string val((int)ch, '\0');
       readfd.read(&val[0], (int)ch);
-      return val;
+      sendToClient(clientSocket, val);
+      sendEndMsgToClient(clientSocket);
+      return opStatus::opSuccess;
     }
     readfd.seekg(ch, std::ios::cur);
   }
   closeFileAfterRead(readfd);
-  return "Key not found!";
+  return opStatus::opFail;
 }
 
 //-----------------------------------------------------------------------------
