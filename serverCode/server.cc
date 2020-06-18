@@ -11,6 +11,7 @@
 #include <queue>
 #include <string>
 
+#include "server.h"
 #include "../dbengine/db.h"
 #include "../dbengine/rpel.h"
 
@@ -138,13 +139,17 @@ void* handle_connection(void* pclient_socket) {
 
       std::string req(buffer);
 
-      bool response = rpelObjRef->execute(dbObjectRef, req, client_socket);
+      opStatus response = rpelObjRef->execute(dbObjectRef, req, client_socket);
 
-      if(response == 0) {
+      if(response == opStatus::opExit) {
         break;
       }
 
-      // write(client_socket, &response[0], strlen(response.c_str()));
+      if(response == opStatus::opInvalid) {
+        std::string responseStr = "Invalid operation!";
+        sendToClient(client_socket, responseStr);
+        sendEndMsgToClient(client_socket);
+      }
     }
   }
 
@@ -155,15 +160,18 @@ void* handle_connection(void* pclient_socket) {
   return NULL;
 }
 
-void sendToClient(int client_socket, std::string response)
-{
+void sendToClient(int client_socket, std::string response) {
+  sendToClient(client_socket, (char)response.length());
   write(client_socket, &response[0], strlen(response.c_str()));
 }
 
 
-void sendToClient(int client_socket, unsigned char response)
-{
+void sendToClient(int client_socket, unsigned char response) {
   write(client_socket, &response, 1);
+}
+
+void sendEndMsgToClient(int client_socket) {
+  sendToClient(client_socket, "```end```"); 
 }
 
 void sendWelcomeMessage(int client_socket) {
@@ -184,11 +192,6 @@ void sendGoodByeMessage(int client_socket) {
   goodBye = "*************************************************************\n";
   goodBye += "*                       Good Bye!                           *\n";
   goodBye += "*************************************************************\n";
-  
-  write(client_socket, &goodBye[0], strlen(goodBye.c_str()));
+
+  write(client_socket, &goodBye[0], strlen(goodBye.c_str()));  
 }
-
-
-
-
-

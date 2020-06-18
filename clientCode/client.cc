@@ -62,26 +62,30 @@ int main(int argc, char** argv) {
               << std::endl;
     
     std::cout << "Response from Server: \n";
-
-    char bufferSize;//Number of bytes to be read
+    
     if(data == "exit") {
       std::cout << "Exiting"
                 << std::endl;
       break;
     }
+
+    char bufferSize; //Number of bytes to be read
     while(true){
       memset(buffer, 0, sizeof(buffer));
-      
+      // Receiving length of string
       recv(clientSd, &bufferSize, sizeof(bufferSize), 0);
+      // Receiving the string
       recv(clientSd, buffer, (int)bufferSize, 0);
-      if(strcmp(buffer,"```end```")==0)break;
-      std::cout<<buffer<<std::endl;
+      if(strcmp(buffer, "```end```") == 0) {
+        break;
+      }
+      std::cout << buffer << std::endl;
     }
-
-    
-  
   }
-    
+
+  // Last message
+  recv(clientSd, buffer, sizeof(buffer), 0);
+  std::cout << buffer << std::endl;
   close(clientSd);
   std::cout << "Connection closed" 
             << std::endl;

@@ -1,51 +1,49 @@
 #include "dbops.h"
 
-bool evalOp(std::string inBuffer, database* dbObject, int clientSocket) {
-  // Return value
-  bool ret=1;
+opStatus evalOp(std::string inBuffer, database* dbObject, int clientSocket) {
   // Put op
   if(regex_match(inBuffer, putRegex)) {
     keyValuePair_t keyValuePair = getKeyValuePair(inBuffer);
-    putOp(keyValuePair, clientSocket, dbObject);
+    return putOp(keyValuePair, clientSocket, dbObject);
   }
   // Get op
   else if(regex_match(inBuffer, getRegex)) {
     std::string key = getKey(inBuffer);
-    getOp(key, clientSocket, dbObject);
+    return getOp(key, clientSocket, dbObject);
   }
   //List all
   else if(regex_match(inBuffer, listAllRegex)) {
-    listAllOp(clientSocket, dbObject);
+    return listAllOp(clientSocket, dbObject);
   }
   // No op
-  else {
-    ret = 0;
-  }
-  return ret;
+  return opStatus::opInvalid;
 }
 
 //-----------------------------------------------------------------------------
 
-void putOp(keyValuePair_t keyValuePair, int clientSocket, database* dbObject) {
+opStatus putOp(keyValuePair_t keyValuePair, 
+               int clientSocket, 
+               database* dbObject) {
   std::cout << "Putting key = <"
        << keyValuePair.key << ">, value = <"
        << keyValuePair.value << "> ..." << std::endl;
-  dbObject->writeKeyValuePair(keyValuePair, clientSocket);
+  return dbObject->writeKeyValuePair(keyValuePair, clientSocket);
 }
 
 //-----------------------------------------------------------------------------
 
-void getOp(std::string key, int clientSocket, database* dbObject) {
+opStatus getOp(std::string key, int clientSocket, database* dbObject) {
   std::cout << "Getting value from the database for the key <"
        << key << "> ..." << std::endl;
-  dbObject->readValueFromKey(key, clientSocket);
+  return dbObject->readValueFromKey(key, clientSocket);
 }
 
 //-----------------------------------------------------------------------------
 
-void listAllOp(int clientSocket, database* dbObject) {
-  std::cout << "Getting all data from the database"<<std::endl;
-  dbObject->readAllValues(clientSocket);
+opStatus listAllOp(int clientSocket, database* dbObject) {
+  std::cout << "Getting all data from the database"
+            << std::endl;
+  return dbObject->readAllValues(clientSocket);
 }
 
 //------------------------------------------------------------------------------

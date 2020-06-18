@@ -53,20 +53,20 @@ void sstableWrapper::dumpMemtableToSSTable(memtable* memtableObjRef) {
 
 //-----------------------------------------------------------------------------
 
-std::string sstableWrapper::getValueFromKey(std::string key) {
+opStatus sstableWrapper::getValueFromKey(std::string key, int clientSocket) {
   std::list<sstable*>::iterator iter;
   int count = 0;
   for(iter = sstableObjRefList.begin();
       iter != sstableObjRefList.end();
       ++iter) {
     ++count;
-    std::string ret = (*iter)->getValueFromKey(key);
-    if(!(ret == "Key not found!")) {
+    opStatus ret = (*iter)->getValueFromKey(key, clientSocket);
+    if(ret == opStatus::opSuccess) {
       return ret;
     }
   }
   std::cout << "Checked " << count << " SSTables!" << std::endl;
-  return "ERROR: Value not found in SSTables!";
+  return opStatus::opFail;
 }
 
 //-----------------------------------------------------------------------------
@@ -78,6 +78,7 @@ sstableWrapper::~sstableWrapper() {
       ++iter) {
     delete *iter;
   }
+  delete sstable_no;
   sstableObjRefList.clear(); 
 }
 
