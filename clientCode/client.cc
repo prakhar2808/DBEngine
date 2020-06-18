@@ -60,19 +60,26 @@ int main(int argc, char** argv) {
     send(clientSd, buffer, strlen(buffer), 0);
     std::cout << "Awaiting server response..." 
               << std::endl;
-    memset(buffer, 0, sizeof(buffer));
     
-    recv(clientSd, buffer, sizeof(buffer), 0);
+    std::cout << "Response from Server: \n";
 
+    char bufferSize;//Number of bytes to be read
     if(data == "exit") {
-      std::cout << buffer
+      std::cout << "Exiting"
                 << std::endl;
       break;
     }
-        
-    std::cout << "Response from Server: " 
-              << buffer 
-              << std::endl;
+    while(true){
+      memset(buffer, 0, sizeof(buffer));
+      
+      recv(clientSd, &bufferSize, sizeof(bufferSize), 0);
+      recv(clientSd, buffer, (int)bufferSize, 0);
+      if(strcmp(buffer,"```end```")==0)break;
+      std::cout<<buffer<<std::endl;
+    }
+
+    
+  
   }
     
   close(clientSd);

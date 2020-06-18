@@ -1,4 +1,5 @@
 #include "memtableWrapper.h"
+#include "../serverCode/server.h"
 
 memtableWrapper::memtableWrapper()
   : writeMutex(PTHREAD_MUTEX_INITIALIZER) {
@@ -10,7 +11,7 @@ memtableWrapper::memtableWrapper()
 
 //-----------------------------------------------------------------------------
 
-std::string memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair) {
+void memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair, int clientSocket) {
   // Locking to write
   pthread_mutex_lock(&writeMutex);
   // Put into the memtable
@@ -33,23 +34,53 @@ std::string memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair) {
   }
   // Unlocking
   pthread_mutex_unlock(&writeMutex);
-  return ret;
+  sendToClient(clientSocket, (char)ret.length());
+  sendToClient(clientSocket, ret);
+  sendToClient(clientSocket, (char)9);
+  sendToClient(clientSocket, "```end```");
 }
 
 //-----------------------------------------------------------------------------
 
-std::string memtableWrapper::getValueFromKey(std::string key) {
+void memtableWrapper::getValueFromKey(std::string key, int clientSocket) {
   std::list<memtable*>::iterator iter;
   for(iter = index; iter != memtableObjPointersList.begin(); iter--) {
     if((*iter)->isKeyPresent(key)) {
-      return (*iter)->getValueFromKey(key);
+      (*iter)->getValueFromKey(key, clientSocket);
+      sendToClient(clientSocket, (char)9);
+      sendToClient(clientSocket, "```end```");
+      return;
+      // return (*iter)->getValueFromKey(key);
     }
   }
   // Checking in the memtable at the head of the list.
   if((*iter)->isKeyPresent(key)) {
-    return (*iter)->getValueFromKey(key);
+    (*iter)->getValueFromKey(key, clientSocket);
+    sendToClient(clientSocket, (char)9);
+    sendToClient(clientSocket, "```end```");
+    return;
   }
-  return "Error: Key Invalid. Key-Value pair not found in Memtable.";
+  std::string ret="Error: Key Invalid. Key-Value pair not found in Memtable.";
+  sendToClient(clientSocket, (char)ret.length());
+  sendToClient(clientSocket, ret);
+  sendToClient(clientSocket, (char)9);
+  sendToClient(clientSocket, "```end```");
+  // return "Error: Key Invalid. Key-Value pair not found in Memtable.";
+}
+
+//-----------------------------------------------------------------------------
+
+
+void memtableWrapper::getAllValues(int clientSocket) {
+  std::list<memtable*>::iterator iter;
+  for(iter = index; iter != memtableObjPointersList.begin(); iter--) {
+    (*iter)->getAllValues(clientSocket);
+  }
+  // Checking in the memtable at the head of the list.
+  (*iter)->getAllValues(clientSocket);
+  sendToClient(clientSocket, (char)9);
+  sendToClient(clientSocket, "```end```");
+
 }
 
 //-----------------------------------------------------------------------------

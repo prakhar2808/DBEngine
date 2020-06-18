@@ -1,4 +1,5 @@
 #include "memtable.h"
+#include "../serverCode/server.h"
 
 memtable::memtable(int size, int capacity) {
   this->size = size;
@@ -24,11 +25,23 @@ bool memtable::isKeyPresent(std::string key) {
 
 //-----------------------------------------------------------------------------
 
-std::string memtable::getValueFromKey(std::string key) {
-  return table[key];
+void memtable::getValueFromKey(std::string key,int clientSocket) {
+  sendToClient(clientSocket, (char)table[key].length());
+  sendToClient(clientSocket, table[key]);
 }
 
 //-----------------------------------------------------------------------------
+
+void memtable::getAllValues(int clientSocket) {
+  std::map<std::string, std::string>::iterator it;
+  for(it=table.begin();it!=table.end();it++){
+    std::string ret = it->first+" -------> "+it->second+"\n";
+    sendToClient(clientSocket, (char)ret.length());
+    sendToClient(clientSocket, ret);
+  }
+}
+
+//------------------------------------------------------------------------------
 
 memtable::~memtable() {
 
