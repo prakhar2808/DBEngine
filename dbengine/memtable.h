@@ -19,7 +19,9 @@ class memtable {
     // Check if a key is present in the memtable
     bool isKeyPresent(std::string key);
     // Retrieve a value from the memtable for a given key
-    std::string getValueFromKey(std::string key);
+    void getValueFromKey(std::string key, int clientSocket);
+    // Get all values from memtable
+    void getAllValues(int clientSocket);
     // Destructor
     ~memtable();
 };

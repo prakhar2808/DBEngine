@@ -8,20 +8,23 @@ database::database() {
 
 //-----------------------------------------------------------------------------
 
-std::string database::writeKeyValuePair(keyValuePair_t keyValuePair) {
-  std::string ret = memtableWrapperObjRef->putKeyValuePair(keyValuePair,
-    sstableWrapperObjRef);
-  return ret;
+void database::writeKeyValuePair(keyValuePair_t keyValuePair,int clientSocket) {
+  memtableWrapperObjRef->putKeyValuePair(keyValuePair, clientSocket);
 }
 
 //-----------------------------------------------------------------------------
 
-std::string database::readValueFromKey(std::string key) {
-  //return memtableWrapperObjRef->getValueFromKey(key);
-  return sstableWrapperObjRef->getValueFromKey(key);
+void database::readValueFromKey(std::string key,int clientSocket) {
+  memtableWrapperObjRef->getValueFromKey(key, clientSocket);
 }
 
 //-----------------------------------------------------------------------------
+
+void database::readAllValues(int clientSocket) {
+  memtableWrapperObjRef->getAllValues(clientSocket);
+}
+
+//----------------------------------------------------------------------------
 
 database::~database() {
 }

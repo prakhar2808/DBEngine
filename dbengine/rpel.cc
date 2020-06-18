@@ -6,11 +6,11 @@ rpel::rpel() {
 
 //-----------------------------------------------------------------------------
 
-std::string rpel::execute(database* dbObjRef, std::string inBuffer) {
+bool rpel::execute(database* dbObjRef, std::string inBuffer, int clientSocket) {
   if(std::regex_match(inBuffer, exitRegex)) {
-    return "exit";
+    return 0;
   }
-  return evalOp(inBuffer, dbObjRef);
+  return evalOp(inBuffer, dbObjRef, clientSocket);
 }
 
 //-----------------------------------------------------------------------------
