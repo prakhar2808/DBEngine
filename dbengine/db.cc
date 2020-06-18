@@ -1,8 +1,9 @@
 #include "db.h"
 
-database::database()
-  : memtableWrapperObjRef(new memtableWrapper()){
-
+database::database() {
+  sstableWrapperObjRef = new sstableWrapper();
+  memtableWrapperObjRef = 
+    new memtableWrapper(*(sstableWrapperObjRef->sstable_no));
 }
 
 //-----------------------------------------------------------------------------

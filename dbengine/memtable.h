@@ -9,10 +9,11 @@
 
 class memtable {
   public:
+    std::map<std::string, std::string> table;
     // Data members
-    int size, capacity;
+    int size, capacity, memtableID;
     // Constructor
-    memtable(int size, int capacity);
+    memtable(int size, int capacity, int memtableID);
     // Put a key, value pair in the memtable
     std::string putKeyValuePair(keyValuePair_t keyValuePair);
     // Check if a key is present in the memtable
@@ -23,8 +24,6 @@ class memtable {
     void getAllValues(int clientSocket);
     // Destructor
     ~memtable();
-  private:
-    std::map<std::string, std::string> table;
 };
 
 #endif

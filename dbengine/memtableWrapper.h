@@ -3,6 +3,7 @@
 
 #include "keyValuePairStruct.h"
 #include "memtable.h"
+#include "sstableWrapper.h"
 
 #include <future>
 #include <list>
@@ -13,15 +14,19 @@
 class memtableWrapper {
   public:
     // Constructor
-    memtableWrapper();
+    memtableWrapper(int lastMemtableID);
     // Put a key-value pair in memtable
-    void putKeyValuePair(keyValuePair_t keyValuePair, int clientSocket);
+
+    void putKeyValuePair(keyValuePair_t keyValuePair,
+                         sstableWrapper* sstableWrapperObjRef,
+                         int clientSocket);
     // Get a value for a key from the memtable
     void getValueFromKey(std::string key, int clientSocket);
     // Get all key-value pairs from db
     void getAllValues(int clientSocket);
     // Write memtable to disk
-    static void writeMemtableToDisk(std::list<memtable*>::iterator iter);
+    static void writeMemtableToDisk(std::list<memtable*>::iterator iter,
+                                    sstableWrapper* sstableWrapperObjRef);
     // Destructor
     ~memtableWrapper();
   private:
@@ -34,6 +39,8 @@ class memtableWrapper {
     std::list<memtable*>::iterator index;
     // Write lock to the memtables.
     pthread_mutex_t writeMutex;
+    // ID of last created memtable
+    int lastMemtableID;
 };
 
 #endif
