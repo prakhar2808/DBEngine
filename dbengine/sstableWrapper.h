@@ -19,6 +19,8 @@ class sstableWrapper {
     void dumpMemtableToSSTable(memtable* memtableObjRef);
     // Get key's value from SSTables
     opStatus getValueFromKey(std::string key, int clientSocket);
+    // Get all key-value pairs from SSTables
+    opStatus getAllValues(int clientSocket);
     // Destructor
     ~sstableWrapper();
 
