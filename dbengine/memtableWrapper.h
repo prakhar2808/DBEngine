@@ -10,7 +10,7 @@
 #include <list>
 #include <pthread.h>
 
-#define MAX_MEMTABLE_SIZE 2
+#define MAX_MEMTABLE_SIZE 1000
 
 class memtableWrapper {
   public:
@@ -27,7 +27,8 @@ class memtableWrapper {
     opStatus getAllValues(int clientSocket);
     // Write memtable to disk
     static void writeMemtableToDisk(std::list<memtable*>::iterator iter,
-                                    sstableWrapper* sstableWrapperObjRef);
+                                    sstableWrapper* sstableWrapperObjRef,
+                                    memtableWrapper* thisObj);
     // Destructor
     ~memtableWrapper();
   private:
