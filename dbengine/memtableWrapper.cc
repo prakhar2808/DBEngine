@@ -32,7 +32,10 @@ opStatus memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair,
     
     // An async task to put memtable at index to disk and delete entry
     // from list.
-    std::thread(writeMemtableToDisk, index, sstableWrapperObjRef).detach();
+    std::thread(writeMemtableToDisk, 
+                index, 
+                sstableWrapperObjRef, 
+                this).detach();
     
     // Make index point to the next memtable.
     ++index;
@@ -87,13 +90,16 @@ opStatus memtableWrapper::getAllValues(int clientSocket) {
 //-----------------------------------------------------------------------------
 
 void memtableWrapper::writeMemtableToDisk(std::list<memtable*>::iterator iter,
-    sstableWrapper* sstableWrapperObjRef) {
+    sstableWrapper* sstableWrapperObjRef, memtableWrapper* thisObj) {
   std::cout << "Dumping memtable "
             << "ID: " << (*iter)->memtableID
             << " to disk..." << std::endl;
   sstableWrapperObjRef->dumpMemtableToSSTable(*iter);
   //std::this_thread::sleep_for(std::chrono::seconds(20));
-  //TODO: Delete index from list.
+  //Delete index from list.
+  memtable* memtableObj = *iter;
+  thisObj->memtableObjPointersList.erase(iter);
+  delete memtableObj;
   std::cout << "Dumped memtable." << std::endl;
 }
 
