@@ -125,13 +125,21 @@ void* handle_connection(void* pclient_socket) {
   sendWelcomeMessage(client_socket);
   // Getting a rpel object for the client.
   rpel* rpelObjRef = new rpel();
+  // Length of the string to be read
+  char responseLength;
   while(true) {
-    msgsize = 0;
     memset(buffer, 0, sizeof(buffer));
-    // Read the client's message -- the name of the file to read
-    if((bytes_read = read(client_socket, buffer + msgsize,
-                             sizeof(buffer) - msgsize - 1)) > 0) {
-      msgsize = bytes_read;
+    // Read the length of client's message.
+    if((bytes_read = read(client_socket, 
+                          &responseLength, 
+                          sizeof(responseLength)) > 0)) {
+      int msgsize = (int)responseLength;
+      check(bytes_read, "recv error");
+
+      // Reading the message.
+      bytes_read = read(client_socket,
+                        buffer,
+                        msgsize);
       check(bytes_read, "recv error");
 
       printf("Request : %s\n", buffer);
@@ -147,6 +155,12 @@ void* handle_connection(void* pclient_socket) {
 
       if(response == opStatus::opInvalid) {
         std::string responseStr = "Invalid operation!";
+        sendToClient(client_socket, responseStr);
+        sendEndMsgToClient(client_socket);
+      }
+
+      if(response == opStatus::opFail) {
+        std::string responseStr = "Operation failed!";
         sendToClient(client_socket, responseStr);
         sendEndMsgToClient(client_socket);
       }
