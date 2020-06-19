@@ -80,7 +80,6 @@ opStatus memtableWrapper::getAllValues(int clientSocket) {
   }
   // Checking in the memtable at the head of the list.
   (*iter)->getAllValues(clientSocket);
-  sendEndMsgToClient(clientSocket);
   return opStatus::opSuccess;
 }
 

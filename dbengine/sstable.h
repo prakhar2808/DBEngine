@@ -21,6 +21,8 @@ class sstable {
     bool isKeyPresent(std::string key);
     // To get the key's value
     opStatus getValueFromKey(std::string key, int clientSocket);
+    // List all key-value pairs
+    opStatus getAllValues(int clientSocket);
     // Destructor
     ~sstable();
   
