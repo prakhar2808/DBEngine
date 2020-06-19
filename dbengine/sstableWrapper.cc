@@ -54,10 +54,10 @@ void sstableWrapper::dumpMemtableToSSTable(memtable* memtableObjRef) {
 //-----------------------------------------------------------------------------
 
 opStatus sstableWrapper::getValueFromKey(std::string key, int clientSocket) {
-  std::list<sstable*>::iterator iter;
+  std::list<sstable*>::reverse_iterator iter;
   int count = 0;
-  for(iter = sstableObjRefList.begin();
-      iter != sstableObjRefList.end();
+  for(iter = sstableObjRefList.rbegin();
+      iter != sstableObjRefList.rend();
       ++iter) {
     ++count;
     opStatus ret = (*iter)->getValueFromKey(key, clientSocket);
