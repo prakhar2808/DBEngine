@@ -1,4 +1,5 @@
 #include "sstableWrapper.h"
+#include "../serverCode/server.h"
 
 sstableWrapper::sstableWrapper() {
   int i = 0;
@@ -67,6 +68,21 @@ opStatus sstableWrapper::getValueFromKey(std::string key, int clientSocket) {
   }
   std::cout << "Checked " << count << " SSTables!" << std::endl;
   return opStatus::opFail;
+}
+
+//-----------------------------------------------------------------------------
+
+opStatus sstableWrapper::getAllValues(int clientSocket) {
+  std::list<sstable*>::iterator iter;
+  int count = 0;
+  for(iter = sstableObjRefList.begin();
+      iter != sstableObjRefList.end();
+      ++iter) {
+    ++count;
+    opStatus ret = (*iter)->getAllValues(clientSocket);
+  }
+  std::cout << "Listed " << count << " SSTables!" << std::endl;
+  return opStatus::opSuccess;
 }
 
 //-----------------------------------------------------------------------------

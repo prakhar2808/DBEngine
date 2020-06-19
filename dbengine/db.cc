@@ -1,4 +1,5 @@
 #include "db.h"
+#include "../serverCode/server.h"
 
 database::database() {
   sstableWrapperObjRef = new sstableWrapper();
@@ -31,9 +32,11 @@ opStatus database::readValueFromKey(std::string key,
 
 opStatus database::readAllValues(int clientSocket) {
   opStatus memtableStatus = memtableWrapperObjRef->getAllValues(clientSocket);
-  if(memtableStatus != opStatus::opSuccess) {
-    return memtableStatus;
-  }
+  //List from SSTables
+  opStatus status = sstableWrapperObjRef->getAllValues(clientSocket);
+  //Sending end message after fetching from memTables and SSTables
+  sendEndMsgToClient(clientSocket);
+
   return memtableStatus;
   //opStatus sstableStatus = 
   //return sstableStatus
