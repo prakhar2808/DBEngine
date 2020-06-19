@@ -63,7 +63,7 @@ opStatus sstable::getValueFromKey(std::string key, int clientSocket) {
     readfd >> ch;
     std::string data((int)ch, '\0');
     readfd.read(&data[0], (int)ch);
-    std::cout << "Read key : " << data << " from SSTable!" << std::endl;
+    // std::cout << "Read key : " << data << " from SSTable!" << std::endl;
     readfd >> ch;
     if(data == key) {
       std::string val((int)ch, '\0');
