@@ -1,4 +1,5 @@
 #include "sstableWrapper.h"
+#include "sstable.h"
 
 sstableWrapper::sstableWrapper() {
   int i = 0;
@@ -7,7 +8,8 @@ sstableWrapper::sstableWrapper() {
       break;
     }
     sstable* sstableObjRef = new sstable(
-        "SSTablesDir/" + std::to_string(i) + ".txt");
+        "SSTablesDir/" + std::to_string(i) + ".txt",
+        "SSTablesDir/" + std::to_string(i) + ".txt.index");
     sstableObjRefList.push_back(sstableObjRef);
     ++i;
   }
@@ -19,9 +21,11 @@ sstableWrapper::sstableWrapper() {
 //-----------------------------------------------------------------------------
 
 void sstableWrapper::dumpMemtableToSSTable(memtable* memtableObjRef) {
+  // File path
+  std::string filePath= 
+    "SSTablesDir/" + std::to_string(memtableObjRef->memtableID) + ".txt";
   // Creating SSTable
-  sstable* sstableObjRef = new sstable(
-      "SSTablesDir/" + std::to_string(memtableObjRef->memtableID) + ".txt");
+  sstable* sstableObjRef = new sstable(filePath);
   // Opening SSTable file to write
   sstableObjRef->openFileToWrite();
   // Writing to the file
@@ -45,7 +49,8 @@ void sstableWrapper::dumpMemtableToSSTable(memtable* memtableObjRef) {
   }
   // Close the file to save the changes.
   sstableObjRef->closeFileAfterWrite();
-
+  // Loading the index in memory.
+  sstableObjRef->loadIndexInMemory();
   // Inserting SSTable to list.
   sstableObjRefList.push_back(sstableObjRef);
   ++(*sstable_no);

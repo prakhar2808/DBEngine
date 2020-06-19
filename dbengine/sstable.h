@@ -3,14 +3,17 @@
 
 #include <fstream>
 #include <vector>
+#include <map>
 
 #include "operation.h"
 #include "memtable.h"
 
+#define FS_BLOCK_SIZE 1024
+
 class sstable {
   public:
     // Constructor
-    sstable(std::string filePath);
+    sstable(std::string filePath, std::string indexFilePath = "");
     // To open the file to write, also creates a file if not already present.
     void openFileToWrite();
     // To write in the file
@@ -21,8 +24,13 @@ class sstable {
     bool isKeyPresent(std::string key);
     // To get the key's value
     opStatus getValueFromKey(std::string key, int clientSocket);
+    // In-memory index - mapping from key to offset in the file.
+    std::map<std::string, long long> index; 
+    // To load the index in memory
+    void loadIndexInMemory();
     // Destructor
     ~sstable();
+
   
   private:
     // To open the file to read
@@ -31,10 +39,14 @@ class sstable {
     void closeFileAfterRead(std::ifstream& readfd);
     // Path to the file for the SSTable file
     std::string filePath;
-    // File descriptor for writing
+    // File descriptor for writing SSTable
     std::ofstream writefd;
+    // File descriptor for writing index
+    std::ofstream writeIndexfd; 
     // Total bytes in the SSTable file
-    int no_bytes;
+    long long no_bytes;
+    // Total blocks written in the SSTable file
+    int total_blocks;
 };
 
 #endif
