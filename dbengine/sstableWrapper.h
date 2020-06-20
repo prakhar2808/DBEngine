@@ -31,7 +31,7 @@ class sstableWrapper {
     // Note : Insert the pointer in the list only after the SSTable has been
     // created and completely written to and before the memtable 
     // has been deleted.
-    std::list<sstable*> sstableObjRefList;
+    std::list<sstable*> sstableObjRefList;  
     // Mutex to use while creating a new unique SSTable
     pthread_mutex_t sstableCreatemutex;
 };

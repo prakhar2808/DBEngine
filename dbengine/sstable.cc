@@ -1,10 +1,20 @@
 #include "sstable.h"
 #include "../serverCode/server.h"
+#include "bloomFilter.h"
 
 sstable::sstable(std::string filePath)
   : filePath(filePath),
     no_bytes(0){
 
+}
+
+//-----------------------------------------------------------------------------
+
+sstable::sstable(std::string filePath, std::string bloomFilePath)
+  : filePath(filePath),
+    no_bytes(0){
+    //Initialize bloom filter
+    filter = new bloomFilter(bloomFilePath);
 }
 
 //-----------------------------------------------------------------------------
