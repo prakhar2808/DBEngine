@@ -6,11 +6,14 @@
 
 #include "operation.h"
 #include "memtable.h"
+#include "bloomFilter.h"
 
 class sstable {
   public:
     // Constructor
     sstable(std::string filePath);
+    // Constructor with bllom file path
+    sstable(std::string filePath, std::string bloomFilePath);
     // To open the file to write, also creates a file if not already present.
     void openFileToWrite();
     // To write in the file
@@ -23,6 +26,8 @@ class sstable {
     opStatus getValueFromKey(std::string key, int clientSocket);
     // List all key-value pairs
     opStatus getAllValues(int clientSocket);
+    //Bloom Filter class
+    bloomFilter* filter;
     // Destructor
     ~sstable();
   
