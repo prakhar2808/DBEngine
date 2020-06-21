@@ -193,7 +193,7 @@ void sendWelcomeMessage(int client_socket) {
   
   welcome = "*************************************************************\n";
   welcome += "*                Welcome to myDB Engine                     *\n";
-  welcome += "*              Created by : Prakhar Sinha                   *\n";
+  welcome += "*        Created by : Prakhar Sinha, Shorya Jain            *\n";
   welcome += "*        (Type exit to terminate the connection)            *\n";
   welcome += "*************************************************************\n"; 
   
