@@ -7,13 +7,16 @@
 
 #include "operation.h"
 #include "memtable.h"
+#include "bloomFilter.h"
 
 #define FS_BLOCK_SIZE 1024
 
 class sstable {
   public:
     // Constructor
-    sstable(std::string filePath, std::string indexFilePath = "");
+    sstable(std::string filePath, 
+            std::string bloomFilePath,
+            std::string indexFilePath = "");
     // To open the file to write, also creates a file if not already present.
     void openFileToWrite();
     // To write in the file
@@ -28,6 +31,10 @@ class sstable {
     std::map<std::string, long long> index; 
     // To load the index in memory
     void loadIndexInMemory();
+    // List all key-value pairs
+    opStatus getAllValues(int clientSocket);
+    //Bloom Filter class
+    bloomFilter* filter;
     // Destructor
     ~sstable();
 

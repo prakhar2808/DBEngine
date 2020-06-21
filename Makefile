@@ -1,4 +1,4 @@
-DB_CC_SOURCES = $(wildcard dbengine/*.cc serverCode/*.cc)
+DB_CC_SOURCES = $(wildcard dbengine/*.cc serverCode/*.cc dbengine/*.cpp)
 DB_HEADERS = $(wildcard dbengine/*.h serverCode/*.h)
 
 CLIENT_CC_SOURCES = $(wildcard clientCode/*.cc)
