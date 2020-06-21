@@ -28,7 +28,7 @@ void sstableWrapper::dumpMemtableToSSTable(memtable* memtableObjRef) {
     "SSTablesDir/" + std::to_string(memtableObjRef->memtableID) + ".txt";
   // Bloom File path
   std::string bloomFilePath =
-    "bloomFiltersDir/" + std::to_string(i) + ".txt";
+    "bloomFiltersDir/" + std::to_string(memtableObjRef->memtableID) + ".txt";
   // Creating SSTable
   sstable* sstableObjRef = new sstable(filePath, bloomFilePath);
   // Opening SSTable file to write

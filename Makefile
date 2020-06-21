@@ -29,7 +29,7 @@ clientrun: dbClient.out
 	./dbClient.out
 
 cleanSSTables:
-	rm -rf SSTablesDir/*
+	rm -rf SSTablesDir/* bloomFiltersDir/*
 clean:
 	rm -rf *.o *.out
 	rm -rf dbengine/*.o serverCode/*.o clientCode/*.o

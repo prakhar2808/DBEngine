@@ -7,7 +7,6 @@ sstable::sstable(std::string filePath,
                  std::string bloomFilePath,
                  std::string indexFilePath)
   : filePath(filePath),
-    bloomFilePath(bloomFilePath),
     no_bytes(0),
     total_blocks(-1){
   

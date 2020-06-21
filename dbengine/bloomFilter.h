@@ -8,7 +8,7 @@
 #include "memtable.h"
 
 #define NUM_HASHES 7
-#define FILTER_SIZE 1000
+#define FILTER_SIZE 10000
 
 class bloomFilter {
   public:
