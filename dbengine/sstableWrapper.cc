@@ -1,4 +1,5 @@
 #include "sstableWrapper.h"
+#include "../serverCode/server.h"
 
 sstableWrapper::sstableWrapper() {
   int i = 0;
@@ -7,7 +8,9 @@ sstableWrapper::sstableWrapper() {
       break;
     }
     sstable* sstableObjRef = new sstable(
-        "SSTablesDir/" + std::to_string(i) + ".txt");
+        "SSTablesDir/" + std::to_string(i) + ".txt",
+        "bloomFiltersDir/"+ std::to_string(i) +".txt");
+
     sstableObjRefList.push_back(sstableObjRef);
     ++i;
   }
@@ -21,7 +24,8 @@ sstableWrapper::sstableWrapper() {
 void sstableWrapper::dumpMemtableToSSTable(memtable* memtableObjRef) {
   // Creating SSTable
   sstable* sstableObjRef = new sstable(
-      "SSTablesDir/" + std::to_string(memtableObjRef->memtableID) + ".txt");
+      "SSTablesDir/" + std::to_string(memtableObjRef->memtableID) + ".txt",
+      "bloomFiltersDir/" + std::to_string(memtableObjRef->memtableID) + ".txt");
   // Opening SSTable file to write
   sstableObjRef->openFileToWrite();
   // Writing to the file
@@ -42,10 +46,11 @@ void sstableWrapper::dumpMemtableToSSTable(memtable* memtableObjRef) {
               (iter->second).end(),
               std::back_inserter(buffer));
     sstableObjRef->writeInFile(buffer);
+    sstableObjRef->filter->add(iter->first);
   }
   // Close the file to save the changes.
   sstableObjRef->closeFileAfterWrite();
-
+  sstableObjRef->filter->writeToFile();
   // Inserting SSTable to list.
   sstableObjRefList.push_back(sstableObjRef);
   ++(*sstable_no);
@@ -60,6 +65,7 @@ opStatus sstableWrapper::getValueFromKey(std::string key, int clientSocket) {
       iter != sstableObjRefList.rend();
       ++iter) {
     ++count;
+    if(!((*iter)->filter->possiblyContains(key)))continue;
     opStatus ret = (*iter)->getValueFromKey(key, clientSocket);
     if(ret == opStatus::opSuccess) {
       return ret;
@@ -67,6 +73,21 @@ opStatus sstableWrapper::getValueFromKey(std::string key, int clientSocket) {
   }
   std::cout << "Checked " << count << " SSTables!" << std::endl;
   return opStatus::opFail;
+}
+
+//-----------------------------------------------------------------------------
+
+opStatus sstableWrapper::getAllValues(int clientSocket) {
+  std::list<sstable*>::reverse_iterator iter;
+  int count = 0;
+  for(iter = sstableObjRefList.rbegin();
+      iter != sstableObjRefList.rend();
+      ++iter) {
+    ++count;
+    opStatus ret = (*iter)->getAllValues(clientSocket);
+  }
+  std::cout << "Listed " << count << " SSTables!" << std::endl;
+  return opStatus::opSuccess;
 }
 
 //-----------------------------------------------------------------------------
@@ -82,7 +103,7 @@ sstableWrapper::~sstableWrapper() {
   sstableObjRefList.clear(); 
 }
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------
 
 bool sstableWrapper::SSTableExists(std::string filePath) {
   struct stat buff;

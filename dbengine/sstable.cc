@@ -1,10 +1,20 @@
 #include "sstable.h"
 #include "../serverCode/server.h"
+#include "bloomFilter.h"
 
 sstable::sstable(std::string filePath)
   : filePath(filePath),
     no_bytes(0){
 
+}
+
+//-----------------------------------------------------------------------------
+
+sstable::sstable(std::string filePath, std::string bloomFilePath)
+  : filePath(filePath),
+    no_bytes(0){
+    //Initialize bloom filter
+    filter = new bloomFilter(bloomFilePath);
 }
 
 //-----------------------------------------------------------------------------
@@ -76,6 +86,28 @@ opStatus sstable::getValueFromKey(std::string key, int clientSocket) {
   }
   closeFileAfterRead(readfd);
   return opStatus::opFail;
+}
+
+//-----------------------------------------------------------------------------
+
+opStatus sstable::getAllValues(int clientSocket) {
+  //TODO: Check if present. Then use in-memory index for offset.
+  std::ifstream readfd;
+  openFileToRead(readfd);
+  unsigned char ch;
+  while(readfd.peek() != EOF) {
+    readfd >> ch;
+    std::string data((int)ch, '\0');
+    readfd.read(&data[0], (int)ch);
+    std::cout << "Read key : " << data << " from SSTable!" << std::endl;
+    readfd >> ch;
+    std::string val((int)ch, '\0');
+    readfd.read(&val[0], (int)ch);
+    sendToClient(clientSocket, data+" -------> "+val+"\n");
+    // readfd.seekg(ch, std::ios::cur);
+  }
+  closeFileAfterRead(readfd);
+  return opStatus::opSuccess;
 }
 
 //-----------------------------------------------------------------------------
