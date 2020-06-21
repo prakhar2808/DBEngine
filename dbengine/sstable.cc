@@ -1,13 +1,21 @@
 #include "sstable.h"
 #include "../serverCode/server.h"
 #include <sys/stat.h>
+#include "bloomFilter.h"
 
-sstable::sstable(std::string filePath, std::string indexFilePath)
+sstable::sstable(std::string filePath, 
+                 std::string bloomFilePath,
+                 std::string indexFilePath)
   : filePath(filePath),
+    bloomFilePath(bloomFilePath),
     no_bytes(0),
     total_blocks(-1){
   
-  struct stat buff; 
+  // Bloom filter object  
+  filter = new bloomFilter(bloomFilePath);
+  
+  struct stat buff;
+  // Check if index present
   if(stat(indexFilePath.c_str(), &buff) != -1) {
     loadIndexInMemory();
   }
@@ -115,15 +123,12 @@ void sstable::loadIndexInMemory() {
 //-----------------------------------------------------------------------------
 
 bool sstable::isKeyPresent(std::string key) {
-  //TODO: Use bloom filter
-  return false;
+  return filter->possiblyContains(key);
 }
 
 //-----------------------------------------------------------------------------
 
 opStatus sstable::getValueFromKey(std::string key, int clientSocket) {
-  //TODO: Check if present.
-
   // Getting the offset of the block using the index.
   std::map<std::string, long long>::iterator iter = index.lower_bound(key);
 
@@ -151,7 +156,6 @@ opStatus sstable::getValueFromKey(std::string key, int clientSocket) {
     readfd >> ch;
     std::string data((int)ch, '\0');
     readfd.read(&data[0], (int)ch);
-    // std::cout << "Read key : " << data << " from SSTable!" << std::endl;
     readfd >> ch;
     if(data > key) {
       break;
@@ -171,8 +175,28 @@ opStatus sstable::getValueFromKey(std::string key, int clientSocket) {
 
 //-----------------------------------------------------------------------------
 
-sstable::~sstable() {
+opStatus sstable::getAllValues(int clientSocket) {
+  std::ifstream readfd;
+  openFileToRead(readfd);
+  unsigned char ch;
+  while(readfd.peek() != EOF) {
+    readfd >> ch;
+    std::string data((int)ch, '\0');
+    readfd.read(&data[0], (int)ch);
+    std::cout << "Read key : " << data << " from SSTable!" << std::endl;
+    readfd >> ch;
+    std::string val((int)ch, '\0');
+    readfd.read(&val[0], (int)ch);
+    sendToClient(clientSocket, data+" -------> "+val+"\n");
+  }
+  closeFileAfterRead(readfd);
+  return opStatus::opSuccess;
+}
 
+//-----------------------------------------------------------------------------
+
+sstable::~sstable() {
+  delete filter;
 }
 
 //-----------------------------------------------------------------------------
