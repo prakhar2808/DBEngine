@@ -1,4 +1,5 @@
 #include "db.h"
+#include "../serverCode/server.h"
 #include <chrono>
 
 database::database() {
@@ -44,11 +45,19 @@ opStatus database::readValueFromKey(std::string key,
 opStatus database::readAllValues(int clientSocket) {
   opStatus memtableStatus = memtableWrapperObjRef->getAllValues(clientSocket);
   if(memtableStatus != opStatus::opSuccess) {
+    sendEndMsgToClient(clientSocket);
     return memtableStatus;
+  }  
+  //List from SSTables
+  opStatus sstableStatus = sstableWrapperObjRef->getAllValues(clientSocket);
+  if(sstableStatus != opStatus::opSuccess) {
+    sendEndMsgToClient(clientSocket);
+    return sstableStatus;
   }
-  return memtableStatus;
-  //opStatus sstableStatus = 
-  //return sstableStatus
+  //Sending end message after fetching from memTables and SSTables
+  sendEndMsgToClient(clientSocket);
+
+  return opStatus::opSuccess;
 }
 
 //----------------------------------------------------------------------------
