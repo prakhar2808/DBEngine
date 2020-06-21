@@ -1,5 +1,6 @@
 #include "sstableWrapper.h"
 #include "sstable.h"
+#include "../serverCode/server.h"
 
 sstableWrapper::sstableWrapper() {
   int i = 0;
@@ -9,6 +10,7 @@ sstableWrapper::sstableWrapper() {
     }
     sstable* sstableObjRef = new sstable(
         "SSTablesDir/" + std::to_string(i) + ".txt",
+        "bloomFiltersDir/" + std::to_string(i) + ".txt",
         "SSTablesDir/" + std::to_string(i) + ".txt.index");
     sstableObjRefList.push_back(sstableObjRef);
     ++i;
@@ -22,17 +24,20 @@ sstableWrapper::sstableWrapper() {
 
 void sstableWrapper::dumpMemtableToSSTable(memtable* memtableObjRef) {
   // File path
-  std::string filePath= 
+  std::string filePath = 
     "SSTablesDir/" + std::to_string(memtableObjRef->memtableID) + ".txt";
+  // Bloom File path
+  std::string bloomFilePath =
+    "bloomFiltersDir/" + std::to_string(i) + ".txt";
   // Creating SSTable
-  sstable* sstableObjRef = new sstable(filePath);
+  sstable* sstableObjRef = new sstable(filePath, bloomFilePath);
   // Opening SSTable file to write
   sstableObjRef->openFileToWrite();
   // Writing to the file
   std::map<std::string, std::string>::iterator iter;
   // Bytes array
   std::vector<unsigned char> buffer;
-  // To write each key-value pair in the SSTable using buffer.
+  // To write each key-value pair in the SSTable and index using buffer.
   for(iter = memtableObjRef->table.begin();
       iter != memtableObjRef->table.end();
       ++iter) {
@@ -45,14 +50,23 @@ void sstableWrapper::dumpMemtableToSSTable(memtable* memtableObjRef) {
     std::copy((iter->second).begin(),
               (iter->second).end(),
               std::back_inserter(buffer));
+    // Add the record to file and index.
     sstableObjRef->writeInFile(buffer);
+    // Add the key to bloom filter.
+    sstableObjRef->filter->add(iter->first);
   }
-  // Close the file to save the changes.
+  
+  // Close the file to save the changes. SSTable and index files are dumped.
   sstableObjRef->closeFileAfterWrite();
+  // Dump the bloom filter to the disk.
+  sstableObjRef->filter->writeToFile();
+  
   // Loading the index in memory.
   sstableObjRef->loadIndexInMemory();
+  
   // Inserting SSTable to list.
   sstableObjRefList.push_back(sstableObjRef);
+  // Increasing the count of number of SSTables.
   ++(*sstable_no);
 }
 
@@ -65,13 +79,35 @@ opStatus sstableWrapper::getValueFromKey(std::string key, int clientSocket) {
       iter != sstableObjRefList.rend();
       ++iter) {
     ++count;
+    // Check the in-memory bloom filter first.
+    if(!((*iter)->isKeyPresent(key))) {
+      continue;
+    }
+    // Now the SSTable may contain the key.
     opStatus ret = (*iter)->getValueFromKey(key, clientSocket);
+    // The key is found in the SSTable then the return will be opSuccess.
     if(ret == opStatus::opSuccess) {
+      std::cout << "Checked " << count << " SSTables and found!" << std::endl;
       return ret;
     }
   }
-  std::cout << "Checked " << count << " SSTables!" << std::endl;
+  std::cout << "Checked " << count << " SSTables but NOT found!" << std::endl;
   return opStatus::opFail;
+}
+
+//-----------------------------------------------------------------------------
+
+opStatus sstableWrapper::getAllValues(int clientSocket) {
+  std::list<sstable*>::reverse_iterator iter;
+  int count = 0;
+  for(iter = sstableObjRefList.rbegin();
+      iter != sstableObjRefList.rend();
+      ++iter) {
+    ++count;
+    opStatus ret = (*iter)->getAllValues(clientSocket);
+  }
+  std::cout << "Listed " << count << " SSTables!" << std::endl;
+  return opStatus::opSuccess;
 }
 
 //-----------------------------------------------------------------------------
