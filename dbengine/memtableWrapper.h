@@ -17,10 +17,13 @@ class memtableWrapper {
     // Constructor
     memtableWrapper(int lastMemtableID);
     // Put a key-value pair in memtable
-
     opStatus putKeyValuePair(keyValuePair_t keyValuePair,
                          sstableWrapper* sstableWrapperObjRef,
                          int clientSocket);
+    // Put vector of key-value pairs in memtable
+    opStatus putKeyValuePair(std::vector<keyValuePair_t>& keyValuePairVec,
+                             sstableWrapper* sstableWrapperObjRef,
+                             int clientSocket);
     // Get a value for a key from the memtable
     opStatus getValueFromKey(std::string key, int clientSocket);
     // Get all key-value pairs from db

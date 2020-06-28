@@ -9,7 +9,7 @@ DB_OBJS = ${DB_CC_SOURCES:.cc=.o}
 CLIENT_OBJS = ${CLIENT_CC_SOURCES:.cc=.o}
 
 CC = g++
-CFLAGS = -std=c++14 -O3 -g -pthread
+CFLAGS = -std=c++14 -g -w -O3 -pthread
 
 all: dbServer.out dbClient.out
 
