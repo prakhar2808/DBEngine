@@ -63,6 +63,8 @@ opStatus database::readAllValues(int clientSocket) {
 //----------------------------------------------------------------------------
 
 database::~database() {
+  delete sstableWrapperObjRef;
+  delete memtableWrapperObjRef;
 }
 
 //-----------------------------------------------------------------------------
