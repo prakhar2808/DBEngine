@@ -6,6 +6,10 @@
 struct keyValuePair_t {
   std::string key;
   std::string value;
+  keyValuePair_t() {
+    key = "";
+    value = "";
+  }
   keyValuePair_t(std::string k, std::string v) {
     key = k;
     value = v;

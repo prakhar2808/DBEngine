@@ -1,10 +1,14 @@
 #include "dbops.h"
 
-opStatus evalOp(std::string inBuffer, database* dbObject, int clientSocket) {
+opStatus evalOp(std::string& inBuffer, database* dbObject, int clientSocket) {
   // Put op
   if(regex_match(inBuffer, putRegex)) {
     keyValuePair_t keyValuePair = getKeyValuePair(inBuffer);
     return putOp(keyValuePair, clientSocket, dbObject);
+  }
+  // File put op
+  if(inBuffer.substr(0,7) == "FILEPUT") {
+    return filePutOp(inBuffer, clientSocket, dbObject); 
   }
   // Get op
   else if(regex_match(inBuffer, getRegex)) {
@@ -25,9 +29,31 @@ opStatus putOp(keyValuePair_t keyValuePair,
                int clientSocket, 
                database* dbObject) {
   std::cout << "Putting key = <"
-       << keyValuePair.key << ">, value = <"
-       << keyValuePair.value << "> ..." << std::endl;
+            << keyValuePair.key << ">, value = <"
+            << keyValuePair.value << "> ..." << std::endl;
   return dbObject->writeKeyValuePair(keyValuePair, clientSocket);
+}
+
+//-----------------------------------------------------------------------------
+
+opStatus filePutOp(std::string& inBuffer,
+                   int clientSocket,
+                   database* dbObject) {
+  std::vector<keyValuePair_t> keyValuePairVec;
+  int keylen, valuelen;
+  std::string key, value;
+  // Starting after "FILEPUT".
+  for(int i = 7; i < (int)inBuffer.length(); ++i) {
+    // Parse key value pairs and put in vector.
+    keylen = inBuffer[i];
+    valuelen = inBuffer[i + keylen + 1];
+    key = inBuffer.substr(i+1, keylen);
+    value = inBuffer.substr(i + keylen + 2, keylen);
+    keyValuePairVec.push_back(keyValuePair_t(key, value));
+    //std::cout << key << " -- " << value << std::endl;
+    i = i + keylen + valuelen + 1;
+  }
+  return dbObject->writeKeyValuePair(keyValuePairVec, clientSocket);
 }
 
 //-----------------------------------------------------------------------------

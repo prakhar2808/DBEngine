@@ -61,6 +61,7 @@ int main(int argc, char** argv) {
     fd >> std::noskipws;
     unsigned char len;
     int count = 0;
+    std::string sendBuffer = "FILEPUT";
     while(fd.peek() != EOF) {
       fd >> len;
       std::string key((int)len, '\0');
@@ -68,11 +69,21 @@ int main(int argc, char** argv) {
       fd >> len;
       std::string value((int)len, '\0');
       fd.read(&value[0], (int)len);
-      std::string data = "put <" + key + "> <" + value + ">";
-      sendToServerAndGetResponse(data, false);
+      std::string data = (char)(key.length()) 
+                         + key 
+                         + (char)(value.length()) 
+                         + value;
+      if(sendBuffer.length() + data.length() > 4000) {
+        sendToServerAndGetResponse(sendBuffer, false);
+        //break;
+        sendBuffer = "FILEPUT";
+      }
+      sendBuffer += data;
       ++count;
-      //break;
     }
+    // Do the last time.
+    sendToServerAndGetResponse(sendBuffer, false);
+    // Calculate time elapsed.
     auto t_end = std::chrono::high_resolution_clock::now();
     double elapsed_time_ms = 
       std::chrono::duration<double, std::milli>(t_end-t_start).count();
@@ -114,9 +125,9 @@ void sendToServerAndGetResponse(std::string data,
                                 bool printResponse) {
     memset(buffer, 0, sizeof(buffer));
     strcpy(buffer, data.c_str());
-    unsigned char len = data.length();
+    //unsigned char len = data.length();
 
-    send(clientSd, &len, 1, 0);
+    //send(clientSd, &len, 1, 0);
     send(clientSd, buffer, strlen(buffer), 0);
     if(printResponse) {
       std::cout << "Awaiting server response..." 

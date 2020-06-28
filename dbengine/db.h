@@ -15,6 +15,9 @@ class database {
     database();
     // Write in DB
     opStatus writeKeyValuePair(keyValuePair_t keyValuePair, int clientSocket);
+    // Write vector in DB. Used when filedump.
+    opStatus writeKeyValuePair(std::vector<keyValuePair_t>& keyValuePairVec,
+                               int clientSocket);
     // Read from DB
     opStatus readValueFromKey(std::string key, int clientSocket);
     // Read all from DB

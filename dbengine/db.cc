@@ -19,6 +19,16 @@ opStatus database::writeKeyValuePair(keyValuePair_t keyValuePair,
 
 //-----------------------------------------------------------------------------
 
+opStatus database::writeKeyValuePair(
+    std::vector<keyValuePair_t>& keyValuePairVec,
+    int clientSocket) {
+  return memtableWrapperObjRef->putKeyValuePair(keyValuePairVec,
+                                                sstableWrapperObjRef,
+                                                clientSocket);
+}
+
+//-----------------------------------------------------------------------------
+
 opStatus database::readValueFromKey(std::string key, 
                                     int clientSocket) {
 

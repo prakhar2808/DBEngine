@@ -7,7 +7,7 @@ rpel::rpel() {
 //-----------------------------------------------------------------------------
 
 opStatus rpel::execute(database* dbObjRef, 
-                       std::string inBuffer, 
+                       std::string& inBuffer, 
                        int clientSocket) {
   if(std::regex_match(inBuffer, exitRegex)) {
     return opStatus::opExit;
