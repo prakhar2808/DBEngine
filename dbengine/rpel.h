@@ -10,7 +10,7 @@ class rpel {
     rpel();
     // Start program
     opStatus execute(database* dbObjRef, 
-                     std::string inBuffer, 
+                     std::string& inBuffer, 
                      int clientSocket);
     // Destructor
     ~rpel();

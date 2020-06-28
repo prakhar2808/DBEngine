@@ -119,34 +119,23 @@ void* handle_connection(void* pclient_socket) {
   int client_socket = *((int*)pclient_socket);
   free(pclient_socket);
   char buffer[BUFSIZE];
-  int msgsize = 0;
   int bytes_read;
   // Sending welcome message.
   sendWelcomeMessage(client_socket);
   // Getting a rpel object for the client.
   rpel* rpelObjRef = new rpel();
-  // Length of the string to be read
-  char responseLength;
   while(true) {
     memset(buffer, 0, sizeof(buffer));
-    // Read the length of client's message.
-    if((bytes_read = read(client_socket, 
-                          &responseLength, 
-                          sizeof(responseLength)) > 0)) {
-      int msgsize = (int)responseLength;
+    // Reading the message.
+    if((bytes_read = read(client_socket,
+                          buffer,
+                          sizeof(buffer))) > 0) {
       check(bytes_read, "recv error");
 
-      // Reading the message.
-      bytes_read = read(client_socket,
-                        buffer,
-                        msgsize);
-      check(bytes_read, "recv error");
-
-      printf("Request : %s\n", buffer);
-      fflush(stdout);
-
+      //printf("Request : %s\n", buffer);
+      //fflush(stdout);
+      // Send to DB engine.
       std::string req(buffer);
-
       opStatus response = rpelObjRef->execute(dbObjectRef, req, client_socket);
 
       if(response == opStatus::opExit) {

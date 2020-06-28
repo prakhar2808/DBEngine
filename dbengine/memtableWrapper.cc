@@ -51,6 +51,49 @@ opStatus memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair,
 
 //-----------------------------------------------------------------------------
 
+opStatus memtableWrapper::putKeyValuePair(
+    std::vector<keyValuePair_t>& keyValuePairVec, 
+    sstableWrapper* sstableWrapperObjRef,
+    int clientSocket) {
+  // Locking to write
+  pthread_mutex_lock(&writeMutex);
+  // Iterating over the vector and writing.
+  for(int i = 0; i < (int)keyValuePairVec.size(); i++) {
+    // Put into the memtable
+    (*index)->putKeyValuePair(keyValuePairVec[i]);
+    // Check if currect memtable is full
+    if((*index)->size == (*index)->capacity) {
+      std::cout << "Creating new memtable! " << i << std::endl; 
+      // New memtable
+      memtable* nextMemtableObjPointer = new memtable(0, 
+                                                      MAX_MEMTABLE_SIZE,
+                                                      lastMemtableID + 1);
+      memtableObjPointersList.push_back(nextMemtableObjPointer);
+      ++lastMemtableID;
+    
+      // An async task to put memtable at index to disk and delete entry
+      // from list.
+      std::thread(writeMemtableToDisk, 
+                  index, 
+                  sstableWrapperObjRef, 
+                  this).detach();
+    
+      // Make index point to the next memtable.
+      ++index;
+      std::cout << "Memtable full, switching to next!" << std::endl;
+    }
+  }
+  // Unlocking
+  pthread_mutex_unlock(&writeMutex);
+  std::string ret = 
+    "Inserted " + std::to_string(keyValuePairVec.size()) + " key-value pairs!";
+  sendToClient(clientSocket, ret);
+  sendEndMsgToClient(clientSocket);
+  return opStatus::opSuccess;
+}
+
+//-----------------------------------------------------------------------------
+
 opStatus memtableWrapper::getValueFromKey(std::string key, int clientSocket) {
   std::list<memtable*>::iterator iter;
   for(iter = index; iter != memtableObjPointersList.begin(); iter--) {

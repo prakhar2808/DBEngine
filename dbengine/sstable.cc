@@ -31,7 +31,7 @@ void sstable::openFileToWrite() {
 
 void sstable::writeInFile(std::vector<unsigned char>& buffer) {
   // Writing in SSTable.
-  for(int i = 0; i < buffer.size(); ++i) {
+  for(int i = 0; i < (int)buffer.size(); ++i) {
     writefd << buffer[i];
   }
   
@@ -56,7 +56,7 @@ void sstable::writeInFile(std::vector<unsigned char>& buffer) {
     // Length of the offset's string representation
     writeIndexfd << (unsigned char)(offset.size());
     // The offset's string representation
-    for(int i = 0; i < offset.size(); ++i) {
+    for(int i = 0; i < (int)offset.size(); ++i) {
       writeIndexfd << offset[i];
     }
     ++total_blocks;
