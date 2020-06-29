@@ -15,6 +15,11 @@ opStatus evalOp(std::string& inBuffer, database* dbObject, int clientSocket) {
     std::string key = getKey(inBuffer);
     return getOp(key, clientSocket, dbObject);
   }
+  // Delete op
+  else if(regex_match(inBuffer, deleteRegex)) {
+    std::string key = getKey(inBuffer);
+    return deleteOp(key, clientSocket, dbObject);
+  }
   //List all
   else if(regex_match(inBuffer, listAllRegex)) {
     return listAllOp(clientSocket, dbObject);
@@ -62,6 +67,16 @@ opStatus getOp(std::string key, int clientSocket, database* dbObject) {
   std::cout << "Getting value from the database for the key <"
        << key << "> ..." << std::endl;
   return dbObject->readValueFromKey(key, clientSocket);
+}
+
+//-----------------------------------------------------------------------------
+
+opStatus deleteOp(std::string key, int clientSocket, database* dbObject) {
+  std::cout << "Deleting key <" 
+            << key 
+            << "> from the database ... " 
+            << std::endl;
+  return dbObject->deleteKey(key, clientSocket);
 }
 
 //-----------------------------------------------------------------------------

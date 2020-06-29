@@ -13,7 +13,7 @@ int main() {
   file.open("input.txt");
   std::string key, value;
   std::vector<unsigned char> buffer;
-  for(int i = 0; i < 100000; ++i) {
+  for(int i = 0; i < 1000000; ++i) {
     key = "";
     value = "";
     for(int j = 0; j < 10; j++) {
@@ -25,7 +25,7 @@ int main() {
     std::copy(key.begin(), key.end(), std::back_inserter(buffer));
     buffer.push_back((unsigned char)value.length());
     std::copy(value.begin(), value.end(), std::back_inserter(buffer));
-    for(int i = 0; i < buffer.size(); i++) {
+    for(int i = 0; i < (int)buffer.size(); i++) {
       file << buffer[i];
     }
   }

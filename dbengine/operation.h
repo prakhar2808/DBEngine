@@ -3,6 +3,7 @@
 
 enum opStatus { opSuccess,
                 opInvalid,
+                opKeyNotFound,
                 opFail,
                 opExit };
 

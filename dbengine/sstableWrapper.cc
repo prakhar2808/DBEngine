@@ -90,9 +90,15 @@ opStatus sstableWrapper::getValueFromKey(std::string key, int clientSocket) {
       std::cout << "Checked " << count << " SSTables and found!" << std::endl;
       return ret;
     }
+    // The key is found as a tombstone.
+    if(ret == opStatus::opKeyNotFound) {
+      std::cout << "Checked " << count << " SSTables but NOT found!" 
+                << std::endl;
+      return ret;
+    }
   }
   std::cout << "Checked " << count << " SSTables but NOT found!" << std::endl;
-  return opStatus::opFail;
+  return opStatus::opKeyNotFound;
 }
 
 //-----------------------------------------------------------------------------

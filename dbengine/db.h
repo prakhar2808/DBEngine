@@ -22,6 +22,8 @@ class database {
     opStatus readValueFromKey(std::string key, int clientSocket);
     // Read all from DB
     opStatus readAllValues(int clientSocket);
+    // Delete a key from DB
+    opStatus deleteKey(std::string key, int clientSocket);
     // Destructor
     ~database();
   private:
