@@ -132,12 +132,10 @@ void* handle_connection(void* pclient_socket) {
                           sizeof(buffer))) > 0) {
       check(bytes_read, "recv error");
 
-      //printf("Request : %s\n", buffer);
-      //fflush(stdout);
       // Send to DB engine.
       std::string req(buffer);
       opStatus response = rpelObjRef->execute(dbObjectRef, req, client_socket);
-
+      
       if(response == opStatus::opExit) {
         break;
       }
@@ -150,6 +148,12 @@ void* handle_connection(void* pclient_socket) {
 
       if(response == opStatus::opFail) {
         std::string responseStr = "Operation failed!";
+        sendToClient(client_socket, responseStr);
+        sendEndMsgToClient(client_socket);
+      }
+
+      if(response == opStatus::opKeyNotFound) {
+        std::string responseStr = "Key not found!";
         sendToClient(client_socket, responseStr);
         sendEndMsgToClient(client_socket);
       }

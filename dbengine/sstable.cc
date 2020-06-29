@@ -155,13 +155,17 @@ opStatus sstable::getValueFromKey(std::string key, int clientSocket) {
     readfd >> ch;
     std::string data((int)ch, '\0');
     readfd.read(&data[0], (int)ch);
-    readfd >> ch;
     if(data > key) {
       break;
     }
+    readfd >> ch;
     if(data == key) {
       std::string val((int)ch, '\0');
       readfd.read(&val[0], (int)ch);
+      // If the value has been deleted.
+      if(val == "") {
+        return opStatus::opKeyNotFound;
+      }
       sendToClient(clientSocket, val);
       sendEndMsgToClient(clientSocket);
       return opStatus::opSuccess;

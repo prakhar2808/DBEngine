@@ -43,7 +43,11 @@ opStatus memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair,
   }
   // Unlocking
   pthread_mutex_unlock(&writeMutex);
-  std::string ret = "Successfully inserted!";
+  std::string ret = "Inserted successfully!";
+  // Check if it was a put operation corresponding to a deletion.
+  if(keyValuePair.value == "") {
+    ret = "Deleted the key from the database!";
+  }
   sendToClient(clientSocket, ret);
   sendEndMsgToClient(clientSocket);
   return opStatus::opSuccess;
@@ -99,6 +103,9 @@ opStatus memtableWrapper::getValueFromKey(std::string key, int clientSocket) {
   for(iter = index; iter != memtableObjPointersList.begin(); iter--) {
     if((*iter)->isKeyPresent(key)) {
       std::string val = (*iter)->getValueFromKey(key);
+      if(val == "") {
+        return opStatus::opKeyNotFound;
+      }
       sendToClient(clientSocket, val);
       sendEndMsgToClient(clientSocket);
       return opStatus::opSuccess;
@@ -108,6 +115,9 @@ opStatus memtableWrapper::getValueFromKey(std::string key, int clientSocket) {
   // Checking in the memtable at the head of the list.
   if((*iter)->isKeyPresent(key)) {
     std::string val = (*iter)->getValueFromKey(key);
+    if(val == "") {
+      return opStatus::opKeyNotFound;
+    }
     sendToClient(clientSocket, val);
     sendEndMsgToClient(clientSocket);
     return opStatus::opSuccess;

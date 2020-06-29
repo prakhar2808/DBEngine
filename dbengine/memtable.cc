@@ -11,9 +11,12 @@ memtable::memtable(int size, int capacity, int memtableID)
 //-----------------------------------------------------------------------------
 
 void memtable::putKeyValuePair(keyValuePair_t keyValuePair) {
+  bool isKeyPresent = this->isKeyPresent(keyValuePair.key);
   table[keyValuePair.key] = keyValuePair.value;
-  ++size;
-  //std::cout << "Inserted successfully!" << std::endl;
+  // Increase size only on addition of a new key, and not on update.
+  if(!isKeyPresent) {
+    ++size;
+  }
 }
 
 //-----------------------------------------------------------------------------

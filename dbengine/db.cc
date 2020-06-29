@@ -52,6 +52,12 @@ opStatus database::readValueFromKey(std::string key,
 
 //-----------------------------------------------------------------------------
 
+opStatus database::deleteKey(std::string key, int clientSocket) {
+  return this->writeKeyValuePair(keyValuePair_t(key, ""), clientSocket);
+}
+
+//-----------------------------------------------------------------------------
+
 opStatus database::readAllValues(int clientSocket) {
   opStatus memtableStatus = memtableWrapperObjRef->getAllValues(clientSocket);
   if(memtableStatus != opStatus::opSuccess) {
