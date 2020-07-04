@@ -22,7 +22,7 @@ opStatus memtableWrapper::putKeyValuePair(keyValuePair_t keyValuePair,
   // Put into the memtable
   (*index)->putKeyValuePair(keyValuePair);
   // Check if currect memtable is full
-  if((*index)->size == (*index)->capacity) {
+  if((*index)->size >= (*index)->capacity) {
     // New memtable
     memtable* nextMemtableObjPointer = new memtable(0, 
                                                     MAX_MEMTABLE_SIZE,
