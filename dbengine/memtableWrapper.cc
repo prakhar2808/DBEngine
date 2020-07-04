@@ -151,6 +151,8 @@ void memtableWrapper::writeMemtableToDisk(std::list<memtable*>::iterator iter,
   //Delete index from list.
   memtable* memtableObj = *iter;
   thisObj->memtableObjPointersList.erase(iter);
+  // Erase the journal file and then delete the object
+  std::remove(memtableObj->journalFilePath.c_str());
   delete memtableObj;
   std::cout << "Dumped memtable." << std::endl;
 }

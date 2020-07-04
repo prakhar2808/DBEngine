@@ -28,8 +28,8 @@ run: dbServer.out dbClient.out
 clientrun: dbClient.out
 	./dbClient.out
 
-cleanSSTables:
-	rm -rf SSTablesDir/* bloomFiltersDir/*
+cleandata:
+	rm -rf SSTablesDir/* bloomFiltersDir/* journalsDir/*
 clean:
 	rm -rf *.o *.out
 	rm -rf dbengine/*.o serverCode/*.o clientCode/*.o

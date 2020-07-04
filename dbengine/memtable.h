@@ -1,7 +1,7 @@
 #ifndef MEMTABLE_H
 #define MEMTABLE_H
 
-
+#include <fstream>
 #include <map>
 
 #include "operation.h"
@@ -25,6 +25,12 @@ class memtable {
     void getAllValues(int clientSocket);
     // Destructor
     ~memtable();
+
+  public:
+    // Path to the journal file.
+    std::string journalFilePath;
+    // File descriptor to append to the journal
+    std::ofstream journalWritefd;
 };
 
 #endif
