@@ -1,3 +1,5 @@
-SSTablesDir/*.txt.*
+SSTablesDir/*.txt*
 bloomFiltersDir/*.txt
 journalsDir/*
+*.o
+*.out
